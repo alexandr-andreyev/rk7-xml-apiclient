@@ -8,7 +8,11 @@ type RK7Query struct {
 }
 
 type RK7Command struct {
-	CMD string `xml:"CMD,attr"`
+	CMD            string `xml:"CMD,attr"`
+	RefName        string `xml:"RefName,attr"`
+	OnlyActrive    string `xml:"OnlyActive,attr"`
+	WithChildItems string `xml:"WithChildItems,attr"`
+	PropMask       string `xml:"PropMask,attr"`
 }
 
 type RK7QueryResult struct {
@@ -23,12 +27,13 @@ type RK7QueryResult struct {
 }
 
 type CommandResult struct {
-	CMD        string     `xml:"CMD,attr"`
-	Status     string     `xml:"Status,attr"`
-	ErrorText  string     `xml:"ErrorText,attr"`
-	DateTime   string     `xml:"DateTime,attr"`
-	WorkTime   string     `xml:"WorkTime,attr"`
-	SystemInfo SystemInfo `xml:"SystemInfo"`
+	CMD          string       `xml:"CMD,attr"`
+	Status       string       `xml:"Status,attr"`
+	ErrorText    string       `xml:"ErrorText,attr"`
+	DateTime     string       `xml:"DateTime,attr"`
+	WorkTime     string       `xml:"WorkTime,attr"`
+	SystemInfo   SystemInfo   `xml:"SystemInfo"`
+	RK7Reference RK7Reference `xml:"RK7Reference"`
 }
 
 type SystemInfo struct {
@@ -51,4 +56,24 @@ type SystemInfo struct {
 		Code string `xml:"code,attr"`
 		Name string `xml:"name,attr"`
 	} `xml:"Restaurant"`
+}
+
+type RK7Reference struct {
+	DataVersion    string `xml:"DataVersion,attr"`
+	TotalItemCount string `xml:"TotalItemCount"`
+	Items          Items  `xml:"Items"`
+}
+
+type Items struct {
+	Item []Item `xml:"Item"`
+}
+
+type Item struct {
+	Ident           string `xml:"Ident,attr"`
+	GUIDString      string `xml:"GUIDString,attr"`
+	Code            string `xml:"Code,attr"`
+	Name            string `xml:"Name,attr"`
+	Status          string `xml:"Status,attr"`
+	Parent          string `xml:"Parent,attr"`
+	MainParentIdent string `xml:"MainParentIdent,attr"`
 }
