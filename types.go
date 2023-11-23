@@ -8,11 +8,16 @@ type RK7Query struct {
 }
 
 type RK7Command struct {
-	CMD            string `xml:"CMD,attr"`
-	RefName        string `xml:"RefName,attr"`
-	OnlyActrive    string `xml:"OnlyActive,attr"`
-	WithChildItems string `xml:"WithChildItems,attr"`
-	PropMask       string `xml:"PropMask,attr"`
+	CMD            string   `xml:"CMD,attr"`
+	RefName        string   `xml:"RefName,attr"`
+	OnlyActrive    string   `xml:"OnlyActive,attr"`
+	WithChildItems string   `xml:"WithChildItems,attr"`
+	PropMask       string   `xml:"PropMask,attr"`
+	Station        *Station `xml:"Station"`
+}
+
+type Station struct {
+	Code string `xml:"Code,attr"`
 }
 
 type RK7QueryResult struct {
@@ -27,13 +32,35 @@ type RK7QueryResult struct {
 }
 
 type CommandResult struct {
-	CMD          string       `xml:"CMD,attr"`
-	Status       string       `xml:"Status,attr"`
-	ErrorText    string       `xml:"ErrorText,attr"`
-	DateTime     string       `xml:"DateTime,attr"`
-	WorkTime     string       `xml:"WorkTime,attr"`
-	SystemInfo   SystemInfo   `xml:"SystemInfo"`
-	RK7Reference RK7Reference `xml:"RK7Reference"`
+	CMD          string        `xml:"CMD,attr"`
+	Status       string        `xml:"Status,attr"`
+	ErrorText    string        `xml:"ErrorText,attr"`
+	DateTime     string        `xml:"DateTime,attr"`
+	WorkTime     string        `xml:"WorkTime,attr"`
+	SystemInfo   *SystemInfo   `xml:"SystemInfo"`
+	RK7Reference *RK7Reference `xml:"RK7Reference"`
+	PriceScale   *PriceScale   `xml:"PriceScale"`
+	TradeGroup   *TradeGroup   `xml:"TradeGroup"`
+	Dishes       *Dishes       `xml:"Dishes"`
+}
+
+type PriceScale struct {
+	Id   string `xml:"id,attr"`
+	Code string `xml:"code,attr"`
+	Name string `xml:"name,attr"`
+}
+
+type TradeGroup struct {
+	Id   string `xml:"id,attr"`
+	Code string `xml:"code,attr"`
+	Name string `xml:"name,attr"`
+}
+
+type Dishes struct {
+	Item struct {
+		Ident string `xml:"Ident,attr"`
+		Price string `xml:"Price,attr"`
+	}
 }
 
 type SystemInfo struct {
