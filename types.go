@@ -10,10 +10,11 @@ type RK7Query struct {
 type RK7Command struct {
 	CMD            string   `xml:"CMD,attr"`
 	RefName        string   `xml:"RefName,attr"`
-	OnlyActrive    string   `xml:"OnlyActive,attr"`
-	WithChildItems string   `xml:"WithChildItems,attr"`
-	PropMask       string   `xml:"PropMask,attr"`
-	Station        *Station `xml:"Station"`
+	OnlyActrive    string   `xml:"OnlyActive,attr,omitempty"`
+	WithChildItems string   `xml:"WithChildItems,attr,omitempty"`
+	WithMacroProp  string   `xml:"WithMacroProp,attr,omitempty"`
+	PropMask       string   `xml:"PropMask,attr,omitempty"`
+	Station        *Station `xml:"Station,omitempty"`
 }
 
 type Station struct {
@@ -96,11 +97,15 @@ type Items struct {
 }
 
 type Item struct {
-	Ident           string `xml:"Ident,attr"`
-	GUIDString      string `xml:"GUIDString,attr"`
-	Code            string `xml:"Code,attr"`
-	Name            string `xml:"Name,attr"`
-	Status          string `xml:"Status,attr"`
-	Parent          string `xml:"Parent,attr"`
-	MainParentIdent string `xml:"MainParentIdent,attr"`
+	Ident           string     `xml:"Ident,attr"`
+	GUIDString      string     `xml:"GUIDString,attr"`
+	Code            string     `xml:"Code,attr"`
+	Name            string     `xml:"Name,attr"`
+	Status          string     `xml:"Status,attr"`
+	Parent          string     `xml:"Parent,attr"`
+	MainParentIdent string     `xml:"MainParentIdent,attr"`
+	Price           string     `xml:"PRICETYPES-3,attr"`
+	Modscheme       string     `xml:"ModiScheme,attr"`
+	CategPath       string     `xml:"CategPath,attr"`
+	Attributes      []xml.Attr `xml:",any,attr"`
 }
