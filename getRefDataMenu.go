@@ -1,14 +1,19 @@
 package rk7client
 
-func (c Client) GetRefDataMenu() (*RK7QueryResult, error) {
+import "fmt"
+
+func (c Client) GetRefDataMenu(priceType int) (*RK7QueryResult, error) {
+	propMask := fmt.Sprintf("items.(Ident,GUIDString,Code,Name,MainParentIdent,Status,Parent,PriceTypes^%d,CategPath,ModiScheme)", priceType)
 	cmd := RK7Query{
-		RK7Command: []RK7Command{
+		RK7Command2: []RK7Command2{
 			{
 				CMD:            "GetRefData",
 				RefName:        "MENUITEMS",
 				OnlyActrive:    "true",
-				WithChildItems: "0",
-				PropMask:       "items.(Ident,GUIDString,Code,Name,MainParentIdent,Status,Parent)",
+				WithChildItems: "2",
+				WithMacroProp:  "1",
+				//PropMask:       "*",
+				PropMask: propMask,
 			},
 		},
 	}
