@@ -1,11 +1,11 @@
 package rk7client
 
-func (c Client) GetOrderMenu() (*RK7QueryResult, error) {
+func (c Client) GetOrderMenu(stationCode string) (*RK7QueryResult, error) {
 	cmd := RK7Query{
 		RK7Command: []RK7Command{
 			{
 				CMD:     "GetOrderMenu",
-				Station: &Station{Code: "68"},
+				Station: &Station{Code: stationCode},
 			},
 		},
 	}
