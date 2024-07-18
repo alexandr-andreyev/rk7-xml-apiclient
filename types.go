@@ -1,6 +1,10 @@
 package rk7client
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+	"fmt"
+	"io"
+)
 
 type RK7Query struct {
 	XMLName    xml.Name     `xml:"RK7Query"`
@@ -9,12 +13,13 @@ type RK7Query struct {
 
 type RK7Command struct {
 	CMD            string   `xml:"CMD,attr"`
-	RefName        string   `xml:"RefName,attr"`
+	RefName        string   `xml:"RefName,attr,omitempty"`
 	OnlyActrive    string   `xml:"OnlyActive,attr,omitempty"`
 	WithChildItems string   `xml:"WithChildItems,attr,omitempty"`
 	WithMacroProp  string   `xml:"WithMacroProp,attr,omitempty"`
 	PropMask       string   `xml:"PropMask,attr,omitempty"`
 	Station        *Station `xml:"Station,omitempty"`
+	RegisteredOnly string   `xml:"registeredOnly,attr,omitempty"`
 }
 
 type Station struct {
@@ -22,7 +27,7 @@ type Station struct {
 }
 
 type RK7QueryResult struct {
-	//XMLName       xml.Name `xml:"RK7QueryResult"`
+	//XMLName         xml.Name        `xml:"RK7QueryResult"`
 	ServerVersion   string          `xml:"ServerVersion,attr"`
 	XmlVersion      string          `xml:"XmlVersion,attr"`
 	NetName         string          `xml:"NetName,attr"`
@@ -33,85 +38,56 @@ type RK7QueryResult struct {
 }
 
 type CommandResult struct {
-	CMD          string        `xml:"CMD,attr"`
-	Status       string        `xml:"Status,attr"`
-	ErrorText    string        `xml:"ErrorText,attr"`
-	DateTime     string        `xml:"DateTime,attr"`
-	WorkTime     string        `xml:"WorkTime,attr"`
-	SystemInfo   *SystemInfo   `xml:"SystemInfo"`
-	RK7Reference *RK7Reference `xml:"RK7Reference"`
-	PriceScale   *PriceScale   `xml:"PriceScale"`
-	TradeGroup   *TradeGroup   `xml:"TradeGroup"`
-	Dishes       *Dishes       `xml:"Dishes"`
-	RK7RefList   *RK7RefList   `xml:"RK7RefList"`
+	CMD       string `xml:"CMD,attr"`
+	Status    string `xml:"Status,attr"`
+	ErrorText string `xml:"ErrorText,attr"`
+	DateTime  string `xml:"DateTime,attr"`
+	WorkTime  string `xml:"WorkTime,attr"`
+	Data      map[string]string
 }
 
-type RK7RefList struct {
-	RK7Reference []RK7Reference `xml:"RK7Reference"`
-}
+func (cr *CommandResult) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	result := make(map[string]string, 0)
 
-type PriceScale struct {
-	Id   string `xml:"id,attr"`
-	Code string `xml:"code,attr"`
-	Name string `xml:"name,attr"`
-}
-
-type TradeGroup struct {
-	Id   string `xml:"id,attr"`
-	Code string `xml:"code,attr"`
-	Name string `xml:"name,attr"`
-}
-
-type Dishes struct {
-	Item struct {
-		Ident string `xml:"Ident,attr"`
-		Price string `xml:"Price,attr"`
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "CMD":
+			cr.CMD = attr.Value
+		case "Status":
+			cr.Status = attr.Value
+		case "ErrorText":
+			cr.ErrorText = attr.Value
+		case "DateTime":
+			cr.DateTime = attr.Value
+		case "WorkTime":
+			cr.WorkTime = attr.Value
+		}
 	}
-}
 
-type SystemInfo struct {
-	SystemTime      string `xml:"SystemTime,attr"`
-	ReqSysVer       string `xml:"ReqSysVer,attr"`
-	ProcessID       string `xml:"ProcessID,attr"`
-	ShiftDate       string `xml:"ShiftDate,attr"`
-	RestCode        string `xml:"RestCode,attr"`
-	BussinessPeriod struct {
-		Id   string `xml:"id,attr"`
-		Code string `xml:"code,attr"`
-	} `xml:"BusinessPeriod"`
-	CashGroup struct {
-		Id   string `xml:"id,attr"`
-		Code string `xml:"code,attr"`
-		Name string `xml:"name,attr"`
-	} `xml:"CashGroup"`
-	Restaurant struct {
-		Id   string `xml:"id,attr"`
-		Code string `xml:"code,attr"`
-		Name string `xml:"name,attr"`
-	} `xml:"Restaurant"`
-}
+	for {
+		tok, err := d.Token()
 
-type RK7Reference struct {
-	RefName        string `xml:"RefName,attr"`
-	DataVersion    string `xml:"DataVersion,attr"`
-	TotalItemCount string `xml:"TotalItemCount"`
-	Items          Items  `xml:"Items"`
-}
+		if err == io.EOF {
+			break
+		}
 
-type Items struct {
-	Item []Item `xml:"Item"`
-}
+		if err != nil {
+			return err
+		}
 
-type Item struct {
-	Ident           string     `xml:"Ident,attr"`
-	GUIDString      string     `xml:"GUIDString,attr"`
-	Code            string     `xml:"Code,attr"`
-	Name            string     `xml:"Name,attr"`
-	Status          string     `xml:"Status,attr"`
-	Parent          string     `xml:"Parent,attr"`
-	MainParentIdent string     `xml:"MainParentIdent,attr"`
-	Price           string     `xml:"PRICETYPES-3,attr"`
-	Modscheme       string     `xml:"ModiScheme,attr"`
-	CategPath       string     `xml:"CategPath,attr"`
-	Attributes      []xml.Attr `xml:",any,attr"`
+		switch tok.(type) {
+		case xml.StartElement:
+			nextStart := tok.(xml.StartElement)
+			attrs := nextStart.Attr
+
+			fmt.Println(nextStart.Name.Local)
+			for _, attr := range attrs {
+				fmt.Printf("attr %s = %s\n", attr.Name.Local, attr.Value)
+				attrName := fmt.Sprintf("%s_%s", nextStart.Name.Local, attr.Name.Local)
+				result[attrName] = attr.Value
+			}
+		}
+		cr.Data = result
+	}
+	return nil
 }

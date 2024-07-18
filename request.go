@@ -37,28 +37,21 @@ func (c *Client) newRequest(method string, body interface{}) (*http.Request, err
 func (с *Client) do(req *http.Request, v interface{}) (*http.Response, error) {
 	resp, err := с.HTTPClient.Do(req)
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
-		// body, err := io.ReadAll(resp.Body)
-
-		// fmt.Println(string(body))
-		// if err != nil {
-		// 	return nil, err
-		// }
 		err = xml.NewDecoder(resp.Body).Decode(v)
 		if err != nil {
-			fmt.Println("xml Decoder error: ", err)
+			s := fmt.Sprintf("xmkl decode error: %s", err)
+			err = errors.New(s)
+			return nil, err
 		}
-		return resp, err
+		return resp, nil
 	}
 	if resp.StatusCode == 401 {
-		s := fmt.Sprintf("Unauthorized, status: %d", resp.StatusCode)
-		err = errors.New(s)
-		return nil, err
+		return nil, errUnauthorized
 	}
 	s := fmt.Sprintf("Unknown error. Status: %d", resp.StatusCode)
 	err = errors.New(s)

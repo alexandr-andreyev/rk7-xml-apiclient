@@ -1,19 +1,15 @@
 package rk7client
 
-import "fmt"
-
-func (c Client) GetRefData(refName string, priceType int) (*RK7QueryResult, error) {
-	propMask := fmt.Sprintf("items.(Ident,GUIDString,Code,Name,MainParentIdent,Status,Parent,PriceTypes^%d,CategPath,ModiScheme)", priceType)
+func (c Client) GetRefData(refName string, onlyActive string, withChildItems string, withMacroProp string, propMask string) (*RK7QueryResult, error) {
 	cmd := RK7Query{
 		RK7Command: []RK7Command{
 			{
 				CMD:            "GetRefData",
 				RefName:        refName,
-				OnlyActrive:    "true",
-				WithChildItems: "2",
-				WithMacroProp:  "1",
-				//PropMask:       "*",
-				PropMask: propMask,
+				OnlyActrive:    onlyActive,
+				WithChildItems: withChildItems,
+				WithMacroProp:  withMacroProp,
+				PropMask:       propMask,
 			},
 		},
 	}

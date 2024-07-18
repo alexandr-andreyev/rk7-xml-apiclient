@@ -3,7 +3,7 @@ package rk7client
 func (c Client) GetSystemInfo() (*RK7QueryResult, error) {
 	cmd := RK7Query{
 		RK7Command: []RK7Command{
-			{CMD: "GetSystemInfo"},
+			{CMD: "GetSystemInfo2"},
 		},
 	}
 	req, err := c.newRequest("POST", cmd)
