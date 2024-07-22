@@ -1,17 +1,8 @@
 package rk7client
 
-func (c Client) GetRefData(refName string, onlyActive string, withChildItems string, withMacroProp string, propMask string) (*RK7QueryResult, error) {
+func (c Client) GetRefData(input []RK7Command) (*RK7QueryResult, error) {
 	cmd := RK7Query{
-		RK7Command: []RK7Command{
-			{
-				CMD:            "GetRefData",
-				RefName:        refName,
-				OnlyActrive:    onlyActive,
-				WithChildItems: withChildItems,
-				WithMacroProp:  withMacroProp,
-				PropMask:       propMask,
-			},
-		},
+		RK7Command: input,
 	}
 	req, err := c.newRequest("POST", cmd)
 	if err != nil {
