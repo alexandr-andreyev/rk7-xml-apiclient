@@ -12,14 +12,20 @@ type RK7Query struct {
 }
 
 type RK7Command struct {
-	CMD            string   `xml:"CMD,attr"`
-	RefName        string   `xml:"RefName,attr,omitempty"`
-	OnlyActrive    string   `xml:"OnlyActive,attr,omitempty"`
-	WithChildItems string   `xml:"WithChildItems,attr,omitempty"`
-	WithMacroProp  string   `xml:"WithMacroProp,attr,omitempty"`
-	PropMask       string   `xml:"PropMask,attr,omitempty"`
-	Station        *Station `xml:"Station,omitempty"`
-	RegisteredOnly string   `xml:"registeredOnly,attr,omitempty"`
+	CMD            rk7cmd         `xml:"CMD,attr"`
+	RefName        rk7ref         `xml:"RefName,attr,omitempty"`
+	OnlyActrive    onlyactive     `xml:"OnlyActive,attr,omitempty"`
+	WithChildItems withChildItems `xml:"WithChildItems,attr,omitempty"`
+	WithMacroProp  withMacroProp  `xml:"WithMacroProp,attr,omitempty"`
+	PropMask       string         `xml:"PropMask,attr,omitempty"`
+	Station        *Station       `xml:"Station,omitempty"`
+	RegisteredOnly string         `xml:"registeredOnly,attr,omitempty"`
+	PROPFILTERS    []PROPFILTER   `xml:"PROPFILTERS>PROPFILTER,omitempty"`
+}
+
+type PROPFILTER struct {
+	Name  string `xml:"Name,attr"`
+	Value string `xml:"Value,attr"`
 }
 
 type Station struct {
@@ -37,18 +43,40 @@ type RK7QueryResult struct {
 	CommandResult   []CommandResult `xml:"CommandResult"`
 }
 
+type RK7Reference struct {
+	DataVersion    string `xml:"DataVersion,attr,omitempty"`
+	ClassName      string `xml:"ClassName,attr,omitempty"`
+	TotalItemCount string `xml:"TotalItemCount,attr,omitempty"`
+	Count          string `xml:"Count,attr,omitempty"`
+	Items          struct {
+		Item []struct {
+			Ident string `xml:"Ident,attr"`
+			Code  string `xml:"Code,attr"`
+			Name  string `xml:"Name,attr"`
+			Attrs []xml.Attr
+		} `xml:"Item"`
+	} `xml:"Items"`
+}
+
+// WaiterList req
+type Waiters struct {
+	Waiter []struct {
+		ID   string `xml:"ID,attr"`
+		Code string `xml:"Code,attr"`
+	} `xml:"waiter"`
+}
+
 type CommandResult struct {
 	CMD       string `xml:"CMD,attr"`
 	Status    string `xml:"Status,attr"`
 	ErrorText string `xml:"ErrorText,attr"`
 	DateTime  string `xml:"DateTime,attr"`
 	WorkTime  string `xml:"WorkTime,attr"`
-	Data      map[string]string
+	Data      []interface{}
 }
 
 func (cr *CommandResult) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	result := make(map[string]string, 0)
-
 	for _, attr := range start.Attr {
 		switch attr.Name.Local {
 		case "CMD":
@@ -80,14 +108,30 @@ func (cr *CommandResult) UnmarshalXML(d *xml.Decoder, start xml.StartElement) er
 			nextStart := tok.(xml.StartElement)
 			attrs := nextStart.Attr
 
-			fmt.Println(nextStart.Name.Local)
-			for _, attr := range attrs {
-				fmt.Printf("attr %s = %s\n", attr.Name.Local, attr.Value)
-				attrName := fmt.Sprintf("%s_%s", nextStart.Name.Local, attr.Name.Local)
-				result[attrName] = attr.Value
+			if nextStart.Name.Local == "RK7Reference" {
+				ref := RK7Reference{}
+				d.DecodeElement(&ref, &nextStart)
+
+				cr.Data = append(cr.Data, ref)
+				break
+			} else if nextStart.Name.Local == "Waiters" {
+				waiters := Waiters{}
+				d.DecodeElement(&waiters, &nextStart)
+				cr.Data = append(cr.Data, waiters)
+				break
+			} else {
+
+				for _, attr := range attrs {
+					//fmt.Printf("attr %s = %s\n", attr.Name.Local, attr.Value)
+					attrName := fmt.Sprintf("%s_%s", nextStart.Name.Local, attr.Name.Local)
+					result[attrName] = attr.Value
+				}
 			}
 		}
-		cr.Data = result
+
+	}
+	if len(result) > 0 {
+		cr.Data = append(cr.Data, result)
 	}
 	return nil
 }
