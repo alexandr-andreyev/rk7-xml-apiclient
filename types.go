@@ -44,18 +44,43 @@ type RK7QueryResult struct {
 }
 
 type RK7Reference struct {
-	DataVersion    string `xml:"DataVersion,attr,omitempty"`
-	ClassName      string `xml:"ClassName,attr,omitempty"`
-	TotalItemCount string `xml:"TotalItemCount,attr,omitempty"`
-	Count          string `xml:"Count,attr,omitempty"`
-	Items          struct {
-		Item []struct {
-			Ident string `xml:"Ident,attr"`
-			Code  string `xml:"Code,attr"`
-			Name  string `xml:"Name,attr"`
-			Attrs []xml.Attr
-		} `xml:"Item"`
-	} `xml:"Items"`
+	DataVersion    string    `xml:"DataVersion,attr,omitempty"`
+	ClassName      string    `xml:"ClassName,attr,omitempty"`
+	TotalItemCount string    `xml:"TotalItemCount,attr,omitempty"`
+	Count          string    `xml:"Count,attr,omitempty"`
+	Items          []RK7Item `xml:"Items>Item,omitempty"`
+}
+
+type RK7Item struct {
+	Ident      string `xml:"Ident,attr,omitempty"`
+	Code       string `xml:"Code,attr,omitempty"`
+	Name       string `xml:"Name,attr,omitempty"`
+	GuidString string `xml:"GUIDString,attr,omitempty"`
+	Attrs      map[string]string
+}
+
+func (rkitem *RK7Item) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	fmt.Println("start name>", start.Name.Local)
+	startAttrs := start.Attr
+	attrMap := make(map[string]string, len(startAttrs))
+	for _, at := range startAttrs {
+		fmt.Println("Start atr", at.Name.Local, at.Value)
+		switch at.Name.Local {
+		case "Code":
+			rkitem.Code = at.Value
+		case "Ident":
+			rkitem.Ident = at.Value
+		case "Name":
+			rkitem.Name = at.Value
+		case "GUIDString":
+			rkitem.GuidString = at.Value
+		default:
+			attrMap[at.Name.Local] = at.Value
+		}
+	}
+	rkitem.Attrs = attrMap
+
+	return d.Skip()
 }
 
 // WaiterList req
