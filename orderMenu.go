@@ -4,7 +4,7 @@ func (c Client) GetOrderMenu(stationCode string) (*RK7QueryResult, error) {
 	cmd := RK7Query{
 		RK7Command: []RK7Command{
 			{
-				CMD:     "GetOrderMenu",
+				CMD:     RK7CMD_GETORDERMENU,
 				Station: &Station{Code: stationCode},
 			},
 		},
@@ -15,6 +15,9 @@ func (c Client) GetOrderMenu(stationCode string) (*RK7QueryResult, error) {
 	}
 	result := RK7QueryResult{}
 	_, err = c.do(req, &result)
+	if err != nil {
+		return nil, err
+	}
 	//defer resp.Body.Close()
 	return &result, nil
 }

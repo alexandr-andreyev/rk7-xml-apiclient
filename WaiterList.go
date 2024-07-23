@@ -1,15 +1,11 @@
 package rk7client
 
-func (c Client) GetWaiterlist() (*RK7QueryResult, error) {
+func (c Client) GetWaiterlist(registeredOnly bool) (*RK7QueryResult, error) {
 	cmd := RK7Query{
 		RK7Command: []RK7Command{
 			{
-				CMD:            "GetWaiterList",
-				RefName:        "",
-				OnlyActrive:    "",
-				WithChildItems: "",
-				PropMask:       "",
-				RegisteredOnly: "1",
+				CMD:            RK7CMD_GETWAITERLIST,
+				RegisteredOnly: REGISTEREDONLY_TRUE,
 			},
 		},
 	}

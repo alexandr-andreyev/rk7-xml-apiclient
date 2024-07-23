@@ -19,17 +19,45 @@ type RK7Command struct {
 	WithMacroProp  withMacroProp  `xml:"WithMacroProp,attr,omitempty"`
 	PropMask       string         `xml:"PropMask,attr,omitempty"`
 	Station        *Station       `xml:"Station,omitempty"`
-	RegisteredOnly string         `xml:"registeredOnly,attr,omitempty"`
+	Waiter         *Waiter        `xml:"Waiter,omitempty"`
+	RegisteredOnly registeredOnly `xml:"registeredOnly,attr,omitempty"`
+	OnlyOpened     onlyOpened     `xml:"onlyOpened,attr,omitempty"`
 	PROPFILTERS    []PROPFILTER   `xml:"PROPFILTERS>PROPFILTER,omitempty"`
 }
 
 type PROPFILTER struct {
-	Name  string `xml:"Name,attr"`
-	Value string `xml:"Value,attr"`
+	Name  string `xml:"Name,attr,omitempty"`
+	Value string `xml:"Value,attr,omitempty"`
 }
 
 type Station struct {
-	Code string `xml:"Code,attr"`
+	ID   string `xml:"id,attr,omitempty"`
+	Code string `xml:"code,attr,omitempty"`
+	Name string `xml:"name,attr,omitempty"`
+}
+
+type Table struct {
+	ID   string `xml:"id,attr,omitempty"`
+	Code string `xml:"code,attr,omitempty"`
+	Name string `xml:"name,attr,omitempty"`
+}
+
+type OrderCategory struct {
+	ID   string `xml:"id,attr,omitempty"`
+	Code string `xml:"code,attr,omitempty"`
+	Name string `xml:"name,attr,omitempty"`
+}
+
+type OrderType struct {
+	ID   string `xml:"id,attr,omitempty"`
+	Code string `xml:"code,attr,omitempty"`
+	Name string `xml:"name,attr,omitempty"`
+}
+
+type Waiter struct {
+	ID   string `xml:"id,attr,omitempty"`
+	Code string `xml:"code,attr,omitempty"`
+	Name string `xml:"name,attr,omitempty"`
 }
 
 type RK7QueryResult struct {
@@ -91,13 +119,43 @@ type Waiters struct {
 	} `xml:"waiter"`
 }
 
+type Visit struct {
+	Visit                string `xml:"visit,attr"`
+	Guid                 string `xml:"guid,attr"`
+	Finished             string `xml:"finished,attr"`
+	PersistentComment    string `xml:"persistentComment,attr"`
+	NonPersistentComment string `xml:"nonPersistentComment,attr"`
+	Orders               struct {
+		Order struct {
+			Visit         string        `xml:"visit,attr"`
+			OrderIdent    string        `xml:"orderIdent,attr"`
+			Guid          string        `xml:"guid,attr"`
+			OrderName     string        `xml:"orderName,attr"`
+			Version       string        `xml:"version,attr"`
+			OrderSum      string        `xml:"orderSum,attr"`
+			UnpaidSum     string        `xml:"unpaidSum,attr"`
+			DiscountSum   string        `xml:"discountSum,attr"`
+			TotalPieces   string        `xml:"totalPieces,attr"`
+			Paid          string        `xml:"paid,attr"`
+			Finished      string        `xml:"finished,attr"`
+			OpenTime      string        `xml:"openTime,attr"`
+			Waiter        Waiter        `xml:"Waiter"`
+			OrderCategory OrderCategory `xml:"OrderCategory"`
+			OrderType     OrderType     `xml:"OrderType"`
+			Table         Table         `xml:"Table"`
+			Station       Station       `xml:"Station"`
+		}
+	}
+}
+
 type CommandResult struct {
-	CMD       string `xml:"CMD,attr"`
-	Status    string `xml:"Status,attr"`
-	ErrorText string `xml:"ErrorText,attr"`
-	DateTime  string `xml:"DateTime,attr"`
-	WorkTime  string `xml:"WorkTime,attr"`
-	Data      []interface{}
+	CMD         string `xml:"CMD,attr"`
+	Status      string `xml:"Status,attr"`
+	ErrorText   string `xml:"ErrorText,attr"`
+	DateTime    string `xml:"DateTime,attr"`
+	WorkTime    string `xml:"WorkTime,attr"`
+	Lastversion string `xml:"lastversion,attr"`
+	Data        []interface{}
 }
 
 func (cr *CommandResult) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
@@ -143,6 +201,11 @@ func (cr *CommandResult) UnmarshalXML(d *xml.Decoder, start xml.StartElement) er
 				waiters := Waiters{}
 				d.DecodeElement(&waiters, &nextStart)
 				cr.Data = append(cr.Data, waiters)
+				break
+			} else if nextStart.Name.Local == "Visit" {
+				visits := Visit{}
+				d.DecodeElement(&visits, &nextStart)
+				cr.Data = append(cr.Data, visits)
 				break
 			} else {
 

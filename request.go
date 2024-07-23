@@ -34,12 +34,17 @@ func (c *Client) newRequest(method string, body interface{}) (*http.Request, err
 	return req, nil
 }
 
+// TODO add error if cash server down
 func (с *Client) do(req *http.Request, v interface{}) (*http.Response, error) {
 	resp, err := с.HTTPClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
+
+	// body, err := io.ReadAll(resp.Body)
+
+	// fmt.Println(string(body))
 
 	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
 		err = xml.NewDecoder(resp.Body).Decode(v)
