@@ -3,7 +3,7 @@ package rk7client
 func (c Client) GetRefList() (*RK7QueryResult, error) {
 	cmd := RK7Query{
 		RK7Command: []RK7Command{
-			{CMD: "GetRefList"},
+			{CMD: RK7CMD_GETREFLIST},
 		},
 	}
 	req, err := c.newRequest("POST", cmd)
