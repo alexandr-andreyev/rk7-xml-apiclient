@@ -88,11 +88,10 @@ type RK7Item struct {
 }
 
 func (rkitem *RK7Item) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	fmt.Println("start name>", start.Name.Local)
 	startAttrs := start.Attr
 	attrMap := make(map[string]string, len(startAttrs))
 	for _, at := range startAttrs {
-		fmt.Println("Start atr", at.Name.Local, at.Value)
+
 		switch at.Name.Local {
 		case "Code":
 			rkitem.Code = at.Value
