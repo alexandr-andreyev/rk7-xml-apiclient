@@ -14,8 +14,13 @@ const (
 type rk7ref string
 
 const (
-	RK7REF_EMPLOYEES rk7ref = "Employees"
-	RK7REF_CATEGLIST rk7ref = "CATEGLIST"
+	RK7REF_EMPLOYEES         rk7ref = "Employees"
+	RK7REF_CATEGLIST         rk7ref = "CATEGLIST"
+	RK7REF_MENUITEMS         rk7ref = "MenuItems"
+	RK7REF_MODIFIERS         rk7ref = "Modifiers"
+	RK7REF_MODIGROUPS        rk7ref = "ModiGroups"
+	RK7REF_MODISCHEMEDETAILS rk7ref = "ModiSchemeDetails"
+	RK7REF_MODISCHEMES       rk7ref = "ModiSchemes"
 )
 
 type onlyactive string
