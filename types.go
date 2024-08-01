@@ -119,32 +119,45 @@ type Waiters struct {
 }
 
 type Visit struct {
-	Visit                string `xml:"visit,attr"`
-	Guid                 string `xml:"guid,attr"`
-	Finished             string `xml:"finished,attr"`
-	PersistentComment    string `xml:"persistentComment,attr"`
-	NonPersistentComment string `xml:"nonPersistentComment,attr"`
-	Orders               struct {
-		Order struct {
-			Visit         string        `xml:"visit,attr"`
-			OrderIdent    string        `xml:"orderIdent,attr"`
-			Guid          string        `xml:"guid,attr"`
-			OrderName     string        `xml:"orderName,attr"`
-			Version       string        `xml:"version,attr"`
-			OrderSum      string        `xml:"orderSum,attr"`
-			UnpaidSum     string        `xml:"unpaidSum,attr"`
-			DiscountSum   string        `xml:"discountSum,attr"`
-			TotalPieces   string        `xml:"totalPieces,attr"`
-			Paid          string        `xml:"paid,attr"`
-			Finished      string        `xml:"finished,attr"`
-			OpenTime      string        `xml:"openTime,attr"`
-			Waiter        Waiter        `xml:"Waiter"`
-			OrderCategory OrderCategory `xml:"OrderCategory"`
-			OrderType     OrderType     `xml:"OrderType"`
-			Table         Table         `xml:"Table"`
-			Station       Station       `xml:"Station"`
-		}
-	}
+	Visit                string  `xml:"visit,attr"`
+	Guid                 string  `xml:"guid,attr"`
+	Finished             string  `xml:"finished,attr"`
+	PersistentComment    string  `xml:"persistentComment,attr"`
+	NonPersistentComment string  `xml:"nonPersistentComment,attr"`
+	Guests               []Guest `xml:"Guests>Guest"`
+	Orders               []Order `xml:"Orders>Order"`
+}
+
+type Guest struct {
+	GuestLabel string `xml:"guestLabel,attr"`
+	CardCode   string `xml:"cardCode,attr"`
+	ClientID   string `xml:"clientID,attr"`
+	AddressID  string `xml:"addressID,attr"`
+	Interface  struct {
+		ID   string `xml:"id,attr"`
+		Code string `xml:"code,attr"`
+		Name string `xml:"name,attr"`
+	} `xml:"Interface"`
+}
+
+type Order struct {
+	Visit         string        `xml:"visit,attr"`
+	OrderIdent    string        `xml:"orderIdent,attr"`
+	Guid          string        `xml:"guid,attr"`
+	OrderName     string        `xml:"orderName,attr"`
+	Version       string        `xml:"version,attr"`
+	OrderSum      string        `xml:"orderSum,attr"`
+	UnpaidSum     string        `xml:"unpaidSum,attr"`
+	DiscountSum   string        `xml:"discountSum,attr"`
+	TotalPieces   string        `xml:"totalPieces,attr"`
+	Paid          string        `xml:"paid,attr"`
+	Finished      string        `xml:"finished,attr"`
+	OpenTime      string        `xml:"openTime,attr"`
+	Waiter        Waiter        `xml:"Waiter"`
+	OrderCategory OrderCategory `xml:"OrderCategory"`
+	OrderType     OrderType     `xml:"OrderType"`
+	Table         Table         `xml:"Table"`
+	Station       Station       `xml:"Station"`
 }
 
 type CommandResult struct {
