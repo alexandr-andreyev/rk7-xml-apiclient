@@ -3,24 +3,28 @@ package rk7client
 type rk7cmd string
 
 const (
-	RK7CMD_GETREFDATA     rk7cmd = "GetRefData"
-	RK7CMD_GETWAITERLIST  rk7cmd = "GetWaiterList"
-	RK7CMD_GETREFLIST     rk7cmd = "GetRefList"
-	RK7CMD_GETSYSTEMINFO2 rk7cmd = "GetSystemInfo2"
-	RK7CMD_GETORDERMENU   rk7cmd = "GetOrderMenu"
-	RK7CMD_GETORDERLIST2  rk7cmd = "GetOrderList2"
+	RK7CMD_GETREFDATA        rk7cmd = "GetRefData"
+	RK7CMD_GETWAITERLIST     rk7cmd = "GetWaiterList"
+	RK7CMD_GETREFLIST        rk7cmd = "GetRefList"
+	RK7CMD_GETSYSTEMINFO2    rk7cmd = "GetSystemInfo2"
+	RK7CMD_GETORDERMENU      rk7cmd = "GetOrderMenu"
+	RK7CMD_GETORDERLIST2     rk7cmd = "GetOrderList2"
+	RK7CMD_APPLYPERSONALCARD rk7cmd = "ApplyPersonalCard"
 )
 
 type rk7ref string
 
 const (
-	RK7REF_EMPLOYEES         rk7ref = "Employees"
-	RK7REF_CATEGLIST         rk7ref = "CATEGLIST"
-	RK7REF_MENUITEMS         rk7ref = "MenuItems"
-	RK7REF_MODIFIERS         rk7ref = "Modifiers"
-	RK7REF_MODIGROUPS        rk7ref = "ModiGroups"
-	RK7REF_MODISCHEMEDETAILS rk7ref = "ModiSchemeDetails"
-	RK7REF_MODISCHEMES       rk7ref = "ModiSchemes"
+	RK7Ref_RESTAURANTCONCEPTS rk7ref = "RestaurantConcepts"
+	RK7Ref_RESTAURANTREGIONS  rk7ref = "RestaurantRegions"
+	RK7REF_RESTAURANTS        rk7ref = "Restaurants"
+	RK7REF_EMPLOYEES          rk7ref = "Employees"
+	RK7REF_CATEGLIST          rk7ref = "CATEGLIST"
+	RK7REF_MENUITEMS          rk7ref = "MenuItems"
+	RK7REF_MODIFIERS          rk7ref = "Modifiers"
+	RK7REF_MODIGROUPS         rk7ref = "ModiGroups"
+	RK7REF_MODISCHEMEDETAILS  rk7ref = "ModiSchemeDetails"
+	RK7REF_MODISCHEMES        rk7ref = "ModiSchemes"
 )
 
 type onlyactive string
