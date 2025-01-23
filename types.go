@@ -14,6 +14,7 @@ type RK7Query struct {
 type RK7Command struct {
 	CMD            rk7cmd         `xml:"CMD,attr"`
 	RefName        rk7ref         `xml:"RefName,attr,omitempty"`
+	CardCode       string         `xml:"CardCode,attr,omitempty"`
 	OnlyActrive    onlyactive     `xml:"OnlyActive,attr,omitempty"`
 	WithChildItems withChildItems `xml:"WithChildItems,attr,omitempty"`
 	WithMacroProp  withMacroProp  `xml:"WithMacroProp,attr,omitempty"`
