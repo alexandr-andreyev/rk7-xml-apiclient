@@ -8,7 +8,7 @@ package main
 import (
 	"log"
 	"time"
-	rk7client "xmlclient-test/rk7client"
+	rk7client "github.com/alexandr-andreyev/rk7-xml-apiclient"
 )
 
 const (
@@ -19,7 +19,7 @@ const (
 )
 
 func main() {
-	rkeeper := rk7client.NewClient(CashServerIP, CashServerPort, HttpUser, HttpPassword)
+	rkeeper := rk7client.NewClient(CashServerIP, CashServerPort, HttpUser, HttpPassword, 10 * time.Second)
 
 
 	input := []rk7client.RK7Command{
@@ -35,6 +35,18 @@ func main() {
 	if err != nil {
 		log.Println(err)
 	}
-	log.Printf("xml parse struct result: %+v", result)
+
+	for _, result := range response.CommandResult[0].Data {
+		for _, item := range result.(rk7client.RK7Reference).Items {
+			fmt.Println(item.Ident)
+			fmt.Printf("%+v", item)
+		}
+	}
 }
 ```
+
+TODO:
+1. ADD METHODS  
+CreateOrder  
+SaveOrder  
+SetRefData  

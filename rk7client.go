@@ -14,14 +14,14 @@ type Client struct {
 	HTTPClient     *http.Client
 }
 
-func NewClient(CashServerIP string, Port int, UserName, Password string) *Client {
+func NewClient(CashServerIP string, Port int, UserName, Password string, timeout time.Duration) *Client {
 	return &Client{
 		CashServerIP:   CashServerIP,
 		CashServerPort: Port,
 		Username:       UserName,
 		Password:       Password,
 		HTTPClient: &http.Client{
-			Timeout:   time.Minute,
+			Timeout:   timeout,
 			Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}},
 		},
 	}
