@@ -44,6 +44,24 @@ func main() {
 	}
 }
 ```
+```
+	//example get reflist versions
+	result, err := rkeeper.GetRefList()
+	if err != nil {
+		log.Printf("error: %s", err)
+	}
+	// Ищем RK7RefList в данных
+	for _, data := range result.CommandResult[0].Data {
+		if refList, ok := data.(rk7client.RK7RefList); ok {
+			// Теперь refList содержит все RK7Reference
+			log.Printf("Total references: %s", refList.Count)
+			for _, ref := range refList.RK7Reference {
+				log.Printf("Ref: %s, Count: %s, Version: %s",
+					ref.RefName, ref.Count, ref.DataVersion)
+			}
+		}
+	}
+```
 
 TODO:
 1. ADD METHODS  
