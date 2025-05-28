@@ -72,8 +72,15 @@ type RK7QueryResult struct {
 	CommandResult   []CommandResult `xml:"CommandResult"`
 }
 
+type RK7RefList struct {
+	XMLName      xml.Name       `xml:"RK7RefList"`
+	Count        string         `xml:"Count,attr"`
+	RK7Reference []RK7Reference `xml:"RK7Reference"`
+}
+
 type RK7Reference struct {
 	DataVersion    string    `xml:"DataVersion,attr,omitempty"`
+	RefName        string    `xml:"RefName,attr,omitempty"`
 	ClassName      string    `xml:"ClassName,attr,omitempty"`
 	TotalItemCount string    `xml:"TotalItemCount,attr,omitempty"`
 	Count          string    `xml:"Count,attr,omitempty"`
@@ -219,6 +226,11 @@ func (cr *CommandResult) UnmarshalXML(d *xml.Decoder, start xml.StartElement) er
 				visits := Visit{}
 				d.DecodeElement(&visits, &nextStart)
 				cr.Data = append(cr.Data, visits)
+				break
+			} else if nextStart.Name.Local == "RK7RefList" {
+				refList := RK7RefList{}
+				d.DecodeElement(&refList, &nextStart)
+				cr.Data = append(cr.Data, refList)
 				break
 			} else {
 
