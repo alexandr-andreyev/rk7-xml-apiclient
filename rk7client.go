@@ -1,3 +1,14 @@
+// Package rk7client предоставляет клиент для работы с XML API кассового сервера R-Keeper 7.
+//
+// Пример использования:
+//
+//	client := rk7client.NewClient("192.168.0.91", 8086, "http", "http")
+//
+//	info, err := client.GetSystemInfo()
+//	if err != nil {
+//	    log.Fatal(err)
+//	}
+//	fmt.Println(info.CommandResult.SystemInfo.ShiftDate)
 package rk7client
 
 import (
@@ -6,6 +17,7 @@ import (
 	"time"
 )
 
+// Client — HTTP-клиент для взаимодействия с XML API R-Keeper 7.
 type Client struct {
 	CashServerIP   string
 	CashServerPort int
@@ -14,6 +26,8 @@ type Client struct {
 	HTTPClient     *http.Client
 }
 
+// NewClient создаёт клиент для кассового сервера по адресу ip:port с указанными учётными данными.
+// TLS-сертификат сервера не проверяется (самоподписанный).
 func NewClient(CashServerIP string, Port int, UserName, Password string) *Client {
 	return &Client{
 		CashServerIP:   CashServerIP,

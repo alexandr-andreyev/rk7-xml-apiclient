@@ -1,6 +1,7 @@
 package rk7client
 
-func (c Client) GetSystemInfo() (*RK7QueryResult, error) {
+// GetSystemInfo возвращает состояние кассового сервера: версию, дату смены, ресторан, кассовую группу.
+func (c *Client) GetSystemInfo() (*RK7QueryResult, error) {
 	cmd := RK7Query{
 		RK7Command: []RK7Command{
 			{CMD: "GetSystemInfo"},
