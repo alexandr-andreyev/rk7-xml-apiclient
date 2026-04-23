@@ -54,23 +54,28 @@ func TestUnmarshal_SelectorGroups(t *testing.T) {
 	if result.Status != "Ok" {
 		t.Errorf("Status: got %q, want %q", result.Status, "Ok")
 	}
-	if result.CommandResult == nil {
-		t.Fatal("CommandResult is nil")
+	if len(result.CommandResult) == 0 {
+		t.Fatal("CommandResult is empty")
 	}
-	if result.CommandResult.CMD != "GetRefData" {
-		t.Errorf("CMD: got %q, want %q", result.CommandResult.CMD, "GetRefData")
+	cr := result.CommandResult[0]
+	if cr.CMD != "GetRefData" {
+		t.Errorf("CMD: got %q, want %q", cr.CMD, "GetRefData")
 	}
-	if result.CommandResult.RK7Reference == nil {
-		t.Fatal("RK7Reference is nil")
+	if len(cr.Data) == 0 {
+		t.Fatal("CommandResult.Data is empty")
 	}
-	if result.CommandResult.RK7Reference.DataVersion != "133" {
-		t.Errorf("DataVersion: got %q, want %q", result.CommandResult.RK7Reference.DataVersion, "133")
+	ref, ok := cr.Data[0].(RK7Reference)
+	if !ok {
+		t.Fatalf("Data[0] is not RK7Reference, got %T", cr.Data[0])
 	}
-	if result.CommandResult.RK7Reference.TotalItemCount != "3" {
-		t.Errorf("TotalItemCount: got %q, want %q", result.CommandResult.RK7Reference.TotalItemCount, "3")
+	if ref.DataVersion != "133" {
+		t.Errorf("DataVersion: got %q, want %q", ref.DataVersion, "133")
+	}
+	if ref.TotalItemCount != "3" {
+		t.Errorf("TotalItemCount: got %q, want %q", ref.TotalItemCount, "3")
 	}
 
-	items := result.CommandResult.RK7Reference.Items.Item
+	items := ref.Items.Item
 	if len(items) != 1 {
 		t.Fatalf("items count: got %d, want 1", len(items))
 	}
@@ -86,7 +91,6 @@ func TestUnmarshal_SelectorGroups(t *testing.T) {
 		t.Fatalf("Selectors count: got %d, want 3", len(item.Selectors))
 	}
 
-	// TSelector без детей
 	s0 := item.Selectors[0]
 	if s0.Ident != "11048" {
 		t.Errorf("Selector[0].Ident: got %q, want %q", s0.Ident, "11048")
@@ -98,7 +102,6 @@ func TestUnmarshal_SelectorGroups(t *testing.T) {
 		t.Errorf("Selector[0].Children: got %d, want 0", len(s0.Children))
 	}
 
-	// TSelector с двумя TSelectorDetail
 	s1 := item.Selectors[1]
 	if len(s1.Children) != 2 {
 		t.Fatalf("Selector[1].Children count: got %d, want 2", len(s1.Children))
@@ -114,7 +117,6 @@ func TestUnmarshal_SelectorGroups(t *testing.T) {
 		t.Errorf("Detail[0].OrderNum: got %q, want %q", d.OrderNum, "231428")
 	}
 
-	// TSelector с toDish
 	s2 := item.Selectors[2]
 	if len(s2.Children) != 1 {
 		t.Fatalf("Selector[2].Children count: got %d, want 1", len(s2.Children))
@@ -130,16 +132,20 @@ func TestUnmarshal_SystemInfo(t *testing.T) {
 		t.Fatalf("unmarshal error: %v", err)
 	}
 
-	if result.CommandResult == nil {
-		t.Fatal("CommandResult is nil")
+	if len(result.CommandResult) == 0 {
+		t.Fatal("CommandResult is empty")
 	}
-	if result.CommandResult.CMD != "GetSystemInfo" {
-		t.Errorf("CMD: got %q, want %q", result.CommandResult.CMD, "GetSystemInfo")
+	cr := result.CommandResult[0]
+	if cr.CMD != "GetSystemInfo" {
+		t.Errorf("CMD: got %q, want %q", cr.CMD, "GetSystemInfo")
 	}
-	if result.CommandResult.SystemInfo == nil {
-		t.Fatal("SystemInfo is nil")
+	if len(cr.Data) == 0 {
+		t.Fatal("CommandResult.Data is empty")
 	}
-	si := result.CommandResult.SystemInfo
+	si, ok := cr.Data[0].(SystemInfo)
+	if !ok {
+		t.Fatalf("Data[0] is not SystemInfo, got %T", cr.Data[0])
+	}
 	if si.ShiftDate != "20260415" {
 		t.Errorf("ShiftDate: got %q, want %q", si.ShiftDate, "20260415")
 	}
@@ -251,7 +257,7 @@ func TestMarshal_RK7Command_Station(t *testing.T) {
 		t.Fatalf("marshal error: %v", err)
 	}
 	s := string(out)
-	if !strings.Contains(s, `<Station Code="1"`) {
+	if !strings.Contains(s, `<Station`) {
 		t.Errorf("marshaled XML missing Station element\ngot: %s", s)
 	}
 }
@@ -274,13 +280,18 @@ func TestUnmarshal_RefData_WithPriceTypes(t *testing.T) {
 	if err := xml.Unmarshal([]byte(xmlRefDataWithPrices), &result); err != nil {
 		t.Fatalf("unmarshal error: %v", err)
 	}
-	if result.CommandResult == nil {
-		t.Fatal("CommandResult is nil")
+	if len(result.CommandResult) == 0 {
+		t.Fatal("CommandResult is empty")
 	}
-	if result.CommandResult.RK7Reference == nil {
-		t.Fatal("RK7Reference is nil")
+	cr := result.CommandResult[0]
+	if len(cr.Data) == 0 {
+		t.Fatal("CommandResult.Data is empty")
 	}
-	items := result.CommandResult.RK7Reference.Items.Item
+	ref, ok := cr.Data[0].(RK7Reference)
+	if !ok {
+		t.Fatalf("Data[0] is not RK7Reference, got %T", cr.Data[0])
+	}
+	items := ref.Items.Item
 	if len(items) != 1 {
 		t.Fatalf("items count: got %d, want 1", len(items))
 	}

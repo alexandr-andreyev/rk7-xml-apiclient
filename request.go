@@ -3,6 +3,7 @@ package rk7client
 import (
 	"bytes"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -31,6 +32,7 @@ func (c *Client) newRequest(method string, body interface{}) (*http.Request, err
 	return req, nil
 }
 
+// TODO add error if cash server down
 func (с *Client) do(req *http.Request, v interface{}) (*http.Response, error) {
 	resp, err := с.HTTPClient.Do(req)
 	if err != nil {
@@ -40,10 +42,13 @@ func (с *Client) do(req *http.Request, v interface{}) (*http.Response, error) {
 
 	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
 		err = xml.NewDecoder(resp.Body).Decode(v)
-		return resp, err
+		if err != nil {
+			return nil, errors.New(fmt.Sprintf("xml decode error: %s", err))
+		}
+		return resp, nil
 	}
 	if resp.StatusCode == 401 {
-		return nil, fmt.Errorf("unauthorized, status: %d", resp.StatusCode)
+		return nil, errUnauthorized
 	}
 	return nil, fmt.Errorf("unknown error, status: %d", resp.StatusCode)
 }
